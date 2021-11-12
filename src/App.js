@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense } from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default class App extends React.Component {
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      component: () => { return (<></>) }
+    }
+  }
+
+  onClickModule = (m) => () => {
+    let Module
+    switch (m) {
+      case 2:
+        Module = React.lazy(() => import('./module2/Index.js'))
+        break;
+      default:
+        Module = React.lazy(() => import('./module1/Index.js'))
+    }
+
+    this.setState({ component: Module })
+  }
+
+  render() {
+    return (
+      <>
+        <button onClick={this.onClickModule(1)}>Module 1</button>
+        <button onClick={this.onClickModule(2)}>Module 2</button>
+        <Suspense fallback={<div>Loading module...</div>}>
+          <this.state.component />
+        </Suspense>
+      </>
+    )
+  }
 }
-
-export default App;
